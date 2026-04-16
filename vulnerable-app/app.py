@@ -158,6 +158,14 @@ def hash_password_secure(password: str) -> str:
     return hashlib.sha256((salt + password).encode()).hexdigest() + ":" + salt
 
 
+# =============================================================================
+# УЯЗВИМОСТЬ 6: XSS (CWE-79)
+# =============================================================================
+@app.route("/hello")
+def hello():
+    name = request.args.get("name", "")
+    return f"<h1>Hello {name}</h1>" # XSS
+
 if __name__ == "__main__":
     init_db()
     # УЯЗВИМОСТЬ: debug=True в production раскрывает трассировки ошибок
