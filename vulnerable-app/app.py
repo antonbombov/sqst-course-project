@@ -166,6 +166,18 @@ def hello():
     name = request.args.get("name", "")
     return f"<h1>Hello {name}</h1>" # XSS
 
+# =============================================================================
+# УЯЗВИМОСТЬ 7: BAC (CWE-285)
+# =============================================================================
+@app.route("/loginBackdor", methods=["POST"])
+def login_2():
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    if username == "admin" and password == "admin123":
+        return {"status": "ok"}
+    return {"status": "fail"}, 401
+
 if __name__ == "__main__":
     init_db()
     # УЯЗВИМОСТЬ: debug=True в production раскрывает трассировки ошибок
