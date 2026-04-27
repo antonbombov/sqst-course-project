@@ -181,4 +181,4 @@ def login_2():
 if __name__ == "__main__":
     init_db()
     # УЯЗВИМОСТЬ: debug=True в production раскрывает трассировки ошибок
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
