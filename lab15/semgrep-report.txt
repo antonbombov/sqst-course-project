@@ -1,0 +1,462 @@
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 4 files tracked by git with 817 Code rules:
+                                                                                                                        
+  Language      Rules   Files          Origin   Rules                                                                   
+ ─────────────────────────────        ────────────────                                                                  
+  <multilang>     230       4          Custom     817                                                                   
+  python          369       2                                                                                           
+  js              171       2                                                                                           
+                                                                                                                        
+                    
+                    
+┌──────────────────┐
+│ 45 Code Findings │
+└──────────────────┘
+                  
+    backend/app.py
+    ❯❱ sql-injection-db-cursor-execute
+          ❰❰ Blocking ❱❱
+          User-controlled data from a request is passed to 'execute()'. This could lead to a SQL injection and
+          therefore protected information could be leaked. Instead, use django's QuerySets, which are built   
+          with query parameterization and therefore not vulnerable to sql injection. For example, you could   
+          use `Entry.objects.filter(date=2006)`.                                                              
+                                                                                                              
+           81┆ username = request.form.get("username", "")
+           82┆ password = request.form.get("password", "")
+           83┆
+           84┆ conn = get_db_connection()
+           85┆ # УЯЗВИМОСТЬ: строковая конкатенация в SQL-запросе
+           86┆ query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+           87┆ user = conn.execute(query).fetchone()  # SQL INJECTION!
+            ⋮┆----------------------------------------
+           82┆ password = request.form.get("password", "")
+           83┆
+           84┆ conn = get_db_connection()
+           85┆ # УЯЗВИМОСТЬ: строковая конкатенация в SQL-запросе
+           86┆ query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+           87┆ user = conn.execute(query).fetchone()  # SQL INJECTION!
+   
+   ❯❯❱ tainted-sql-string
+          ❰❰ Blocking ❱❱
+          Detected user input used to manually construct a SQL string. This is usually bad practice because 
+          manual construction could accidentally result in a SQL injection. An attacker could use a SQL     
+          injection to steal or modify contents of the database. Instead, use a parameterized query which is
+          available by default in most database engines. Alternatively, consider using an object-relational 
+          mapper (ORM) such as SQLAlchemy which will protect your queries.                                  
+                                                                                                            
+           86┆ query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+            ⋮┆----------------------------------------
+   ❯❯❱ tainted-sql-string
+          ❰❰ Blocking ❱❱
+          Detected user input used to manually construct a SQL string. This is usually bad practice because 
+          manual construction could accidentally result in a SQL injection. An attacker could use a SQL     
+          injection to steal or modify contents of the database. Instead, use a parameterized query which is
+          available by default in most database engines. Alternatively, consider using the Django object-   
+          relational mappers (ORM) instead of raw SQL queries.                                              
+                                                                                                            
+           86┆ query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+   
+    ❯❱ formatted-sql-query
+          ❰❰ Blocking ❱❱
+          Detected possible formatted SQL query. Use parameterized queries instead.
+                                                                                   
+           87┆ user = conn.execute(query).fetchone()  # SQL INJECTION!
+   
+   ❯❯❱ sqlalchemy-execute-raw-query
+          ❰❰ Blocking ❱❱
+          Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL
+          Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy      
+          provides TextualSQL to easily used prepared statement with named parameters. For complex SQL        
+          composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy   
+          ORM will be a better option.                                                                        
+                                                                                                              
+           87┆ user = conn.execute(query).fetchone()  # SQL INJECTION!
+   
+   ❯❯❱ dangerous-subprocess-use-audit
+          ❰❰ Blocking ❱❱
+          Detected subprocess function 'check_output' without a static string. If this data can be controlled
+          by a malicious actor, it may be an instance of command injection. Audit the use of this call to    
+          ensure it is not controllable by an external resource. You may consider using 'shlex.escape()'.    
+                                                                                                             
+          109┆ result = subprocess.check_output(f"ping -c 1 {host}", shell=True)  # CMD INJECTION!
+   
+   ❯❯❱ subprocess-injection
+          ❰❰ Blocking ❱❱
+          Detected user input entering a `subprocess` call unsafely. This could result in a command injection 
+          vulnerability. An attacker could use this vulnerability to execute arbitrary commands on the host,  
+          which allows them to download malware, scan sensitive data, or run any command they wish on the     
+          server. Do not let users choose the command to run. In general, prefer to use Python API versions of
+          system commands. If you must use subprocess, use a dictionary to allowlist a set of commands.       
+                                                                                                              
+          109┆ result = subprocess.check_output(f"ping -c 1 {host}", shell=True)  # CMD INJECTION!
+   
+   ❯❯❱ dangerous-subprocess-use
+          ❰❰ Blocking ❱❱
+          Detected subprocess function 'check_output' with user controlled data. A malicious actor could
+          leverage this to perform command injection. You may consider using 'shlex.escape()'.          
+                                                                                                        
+          109┆ result = subprocess.check_output(f"ping -c 1 {host}", shell=True)  # CMD INJECTION!
+   
+   ❯❯❱ subprocess-shell-true
+          ❰❰ Blocking ❱❱
+          Found 'subprocess' function 'check_output' with 'shell=True'. This is dangerous because this call 
+          will spawn the command using a shell process. Doing so propagates current shell settings and      
+          variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False'
+          instead.                                                                                          
+                                                                                                            
+           ▶▶┆ Autofix ▶ False
+          109┆ result = subprocess.check_output(f"ping -c 1 {host}", shell=True)  # CMD INJECTION!
+   
+    ❯❱ unspecified-open-encoding
+          ❰❰ Blocking ❱❱
+          Missing 'encoding' parameter. 'open()' uses device locale encodings by default, corrupting files    
+          with special characters. Specify the encoding to ensure cross-platform support when opening files in
+          text mode (e.g. encoding="utf-8").                                                                  
+                                                                                                              
+          128┆ with open(filepath) as f:
+   
+    ❯❱ insecure-hash-algorithm-md5
+          ❰❰ Blocking ❱❱
+          Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is
+          therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.               
+                                                                                                         
+          142┆ return hashlib.md5(password.encode()).hexdigest()  # WEAK CRYPTO!
+   
+    ❯❱ md5-used-as-password
+          ❰❰ Blocking ❱❱
+          It looks like MD5 is used as a password hash. MD5 is not considered a secure password hash because  
+          it can be cracked by an attacker in a short amount of time. Use a suitable password hashing function
+          such as scrypt. You can use `hashlib.scrypt`.                                                       
+                                                                                                              
+          142┆ return hashlib.md5(password.encode()).hexdigest()  # WEAK CRYPTO!
+   
+    ❯❱ directly-returned-format-string
+          ❰❰ Blocking ❱❱
+          Detected Flask route directly returning a formatted string. This is subject to cross-site scripting
+          if user input can reach the string. Consider using the template engine instead and rendering pages 
+          with 'render_template()'.                                                                          
+                                                                                                             
+          167┆ return f"<h1>Hello {name}</h1>" # XSS
+   
+    ❯❱ raw-html-format
+          ❰❰ Blocking ❱❱
+          Detected user input flowing into a manually constructed HTML string. You may be accidentally       
+          bypassing secure methods of rendering HTML by manually constructing HTML and this could create a   
+          cross-site scripting vulnerability, which could let attackers steal sensitive user data. To be sure
+          this is safe, check that the HTML is rendered safely. Otherwise, use templates                     
+          (`django.shortcuts.render`) which will safely render HTML instead.                                 
+                                                                                                             
+          167┆ return f"<h1>Hello {name}</h1>" # XSS
+            ⋮┆----------------------------------------
+    ❯❱ raw-html-format
+          ❰❰ Blocking ❱❱
+          Detected user input flowing into a manually constructed HTML string. You may be accidentally       
+          bypassing secure methods of rendering HTML by manually constructing HTML and this could create a   
+          cross-site scripting vulnerability, which could let attackers steal sensitive user data. To be sure
+          this is safe, check that the HTML is rendered safely. Otherwise, use templates                     
+          (`flask.render_template`) which will safely render HTML instead.                                   
+                                                                                                             
+          167┆ return f"<h1>Hello {name}</h1>" # XSS
+   
+    ❯❱ avoid_app_run_with_bad_host
+          ❰❰ Blocking ❱❱
+          Running flask app with host 0.0.0.0 could expose the server publicly.
+                                                                               
+          184┆ app.run(host="0.0.0.0", port=5000, debug=False)
+                    
+    backend/utils.py
+   ❯❯❱ use-defused-xml
+          ❰❰ Blocking ❱❱
+          The Python documentation recommends using `defusedxml` instead of `xml` because the native Python
+          `xml` library is vulnerable to XML External Entity (XXE) attacks. These attacks can leak         
+          confidential data and "XML bombs" can cause denial of service.                                   
+                                                                                                           
+           25┆ import xml.etree.ElementTree as ET  # noqa: S405 — намеренная уязвимость
+   
+    ❯❱ avoid-pickle
+          ❰❰ Blocking ❱❱
+          Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the
+          serialized data could be manipulated to run arbitrary code. Instead, consider serializing the       
+          relevant data as JSON or a similar text-based serialization format.                                 
+                                                                                                              
+           36┆ user = pickle.loads(session_data)  # noqa: S301 — намеренная уязвимость
+            ⋮┆----------------------------------------
+           42┆ return pickle.dumps(user)
+   
+    ❯❱ dynamic-urllib-use-detected
+          ❰❰ Blocking ❱❱
+          Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic    
+          value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib  
+          calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.
+                                                                                                              
+           88┆ with urllib.request.urlopen(url) as response:  # noqa: S310 — намеренная уязвимость
+   
+    ❯❱ unspecified-open-encoding
+          ❰❰ Blocking ❱❱
+          Missing 'encoding' parameter. 'open()' uses device locale encodings by default, corrupting files    
+          with special characters. Specify the encoding to ensure cross-platform support when opening files in
+          text mode (e.g. encoding="utf-8").                                                                  
+                                                                                                              
+          125┆ with open(report_path) as f:  # noqa: PTH123 — намеренная уязвимость
+            ⋮┆----------------------------------------
+          146┆ with open(report_path) as f:
+                   
+    frontend/app.js
+     ❱ express-check-csurf-middleware-usage
+          ❰❰ Blocking ❱❱
+          A CSRF middleware was not detected in your express application. Ensure you are either using one such
+          as `csurf` or `csrf` (see rule references) and/or you are properly doing CSRF validation in your    
+          routes with a token or cookies.                                                                     
+                                                                                                              
+            7┆ const app = express();
+   
+     ❱ generic-api-key
+          ❰❰ Blocking ❱❱
+          A gitleaks generic-api-key was detected which attempts to identify hard-coded credentials.  It is   
+          not recommended to store credentials in source-code, as this risks secrets being leaked  and used by
+          either an internal or external malicious adversary. It is recommended to use  environment variables 
+          to securely provide credentials or retrieve credentials from a  secure vault or HSM (Hardware       
+          Security Module). This rule can introduce a lot of false positives,  it is not recommended to be    
+          used in PR comments.                                                                                
+                                                                                                              
+           13┆ const JWT_SECRET = "jwtsecret12345";  // секрет в коде
+   
+     ❱ stripe-access-token
+          ❰❰ Blocking ❱❱
+          A gitleaks stripe-access-token was detected which attempts to identify hard-coded credentials. It is
+          not recommended to store credentials in source-code, as this risks secrets being leaked and used by 
+          either an internal or external malicious adversary. It is recommended to use environment variables  
+          to securely provide credentials or retrieve credentials from a secure vault or HSM (Hardware        
+          Security Module).                                                                                   
+                                                                                                              
+           14┆ const API_KEY = "sk_live_4eR56T7yU8i";
+   
+    ❯❱ express-cookie-session-default-name
+          ❰❰ Blocking ❱❱
+          Don’t use the default session cookie name Using the default session cookie name can open your app to
+          attacks. The security issue posed is similar to X-Powered-By: a potential attacker can use it to    
+          fingerprint the server and target attacks accordingly.                                              
+                                                                                                              
+           27┆ app.use(session({
+           28┆     secret: JWT_SECRET,
+           29┆     resave: false,
+           30┆     saveUninitialized: true,  // S3330 — генерирует сессии для неаутентифицированных
+           31┆     cookie: {
+           32┆         secure: false,         // S4568 — allow HTTP cookies
+           33┆         httpOnly: false,       // S4568 — XSS может украсть куки
+           34┆         maxAge: 365 * 24 * 3600000  // Год — очень долго
+           35┆     }
+           36┆ }));
+   
+    ❯❱ express-cookie-session-no-domain
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `domain` not set. It indicates the domain of the cookie; use it
+          to compare against the domain of the server in which the URL is being requested. If they match, then
+          check the path attribute next.                                                                      
+                                                                                                              
+           27┆ app.use(session({
+           28┆     secret: JWT_SECRET,
+           29┆     resave: false,
+           30┆     saveUninitialized: true,  // S3330 — генерирует сессии для неаутентифицированных
+           31┆     cookie: {
+           32┆         secure: false,         // S4568 — allow HTTP cookies
+           33┆         httpOnly: false,       // S4568 — XSS может украсть куки
+           34┆         maxAge: 365 * 24 * 3600000  // Год — очень долго
+           35┆     }
+           36┆ }));
+   
+    ❯❱ express-cookie-session-no-expires
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `expires` not set. Use it to set expiration date for persistent
+          cookies.                                                                                            
+                                                                                                              
+           27┆ app.use(session({
+           28┆     secret: JWT_SECRET,
+           29┆     resave: false,
+           30┆     saveUninitialized: true,  // S3330 — генерирует сессии для неаутентифицированных
+           31┆     cookie: {
+           32┆         secure: false,         // S4568 — allow HTTP cookies
+           33┆         httpOnly: false,       // S4568 — XSS может украсть куки
+           34┆         maxAge: 365 * 24 * 3600000  // Год — очень долго
+           35┆     }
+           36┆ }));
+   
+    ❯❱ express-cookie-session-no-httponly
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `httpOnly` not set. It ensures the cookie is sent only over
+          HTTP(S), not client JavaScript, helping to protect against cross-site scripting attacks.        
+                                                                                                          
+           27┆ app.use(session({
+           28┆     secret: JWT_SECRET,
+           29┆     resave: false,
+           30┆     saveUninitialized: true,  // S3330 — генерирует сессии для неаутентифицированных
+           31┆     cookie: {
+           32┆         secure: false,         // S4568 — allow HTTP cookies
+           33┆         httpOnly: false,       // S4568 — XSS может украсть куки
+           34┆         maxAge: 365 * 24 * 3600000  // Год — очень долго
+           35┆     }
+           36┆ }));
+   
+    ❯❱ express-cookie-session-no-path
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `path` not set. It indicates the path of the cookie; use it to
+          compare against the request path. If this and domain match, then send the cookie in the request.   
+                                                                                                             
+           27┆ app.use(session({
+           28┆     secret: JWT_SECRET,
+           29┆     resave: false,
+           30┆     saveUninitialized: true,  // S3330 — генерирует сессии для неаутентифицированных
+           31┆     cookie: {
+           32┆         secure: false,         // S4568 — allow HTTP cookies
+           33┆         httpOnly: false,       // S4568 — XSS может украсть куки
+           34┆         maxAge: 365 * 24 * 3600000  // Год — очень долго
+           35┆     }
+           36┆ }));
+   
+    ❯❱ express-cookie-session-no-secure
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `secure` not set. It ensures the browser only sends the cookie
+          over HTTPS.                                                                                        
+                                                                                                             
+           27┆ app.use(session({
+           28┆     secret: JWT_SECRET,
+           29┆     resave: false,
+           30┆     saveUninitialized: true,  // S3330 — генерирует сессии для неаутентифицированных
+           31┆     cookie: {
+           32┆         secure: false,         // S4568 — allow HTTP cookies
+           33┆         httpOnly: false,       // S4568 — XSS может украсть куки
+           34┆         maxAge: 365 * 24 * 3600000  // Год — очень долго
+           35┆     }
+           36┆ }));
+   
+    ❯❱ express-session-hardcoded-secret
+          ❰❰ Blocking ❱❱
+          A hard-coded credential was detected. It is not recommended to store credentials in source-code, as
+          this risks secrets being leaked and used by either an internal or external malicious adversary. It 
+          is recommended to use environment variables to securely provide credentials or retrieve credentials
+          from a secure vault or HSM (Hardware Security Module).                                             
+                                                                                                             
+           28┆ secret: JWT_SECRET,
+   
+   ❯❯❱ tainted-sql-string
+          ❰❰ Blocking ❱❱
+          Detected user input used to manually construct a SQL string. This is usually bad practice because 
+          manual construction could accidentally result in a SQL injection. An attacker could use a SQL     
+          injection to steal or modify contents of the database. Instead, use a parameterized query which is
+          available by default in most database engines. Alternatively, consider using an object-relational 
+          mapper (ORM) such as Sequelize which will protect your queries.                                   
+                                                                                                            
+           56┆ const query = `SELECT * FROM users WHERE username = '${username}' AND password =
+               '${password}'`;                                                                 
+   
+   ❯❯❱ detect-child-process
+          ❰❰ Blocking ❱❱
+          Detected calls to child_process from a function argument `req`. This could lead to a command  
+          injection if the input is user controllable. Try to avoid calls to child_process, and if it is
+          needed ensure user input is correctly sanitized or sandboxed.                                 
+                                                                                                        
+           80┆ exec(`ping -c 1 ${host}`, (error, stdout, stderr) => {
+   
+    ❯❱ express-path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Possible writing outside of the destination, make sure that the target path is nested in the
+          intended destination                                                                        
+                                                                                                      
+           98┆ const filepath = path.join('/var/app/data/', filename);
+   
+    ❯❱ path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or `path.resolve` function. This could   
+          possibly lead to a path traversal vulnerability,  where the attacker can access arbitrary files
+          stored in the file system. Instead, be sure to sanitize or validate user input first.          
+                                                                                                         
+           98┆ const filepath = path.join('/var/app/data/', filename);
+   
+    ❯❱ detect-non-literal-fs-filename
+          ❰❰ Blocking ❱❱
+          Detected that function argument `req` has entered the fs module. An attacker could potentially
+          control the location of this file, to include going backwards in the directory with '../'. To 
+          address this, ensure that user-controlled variables in file paths are validated.              
+                                                                                                        
+           99┆ fs.readFile(filepath, 'utf8', (err, data) => {
+   
+    ❯❱ direct-response-write
+          ❰❰ Blocking ❱❱
+          Detected directly writing to a Response object from user-defined input. This bypasses any HTML      
+          escaping and may expose your application to a Cross-Site-scripting (XSS) vulnerability. Instead, use
+          'resp.render()' to render safely escaped HTML.                                                      
+                                                                                                              
+          114┆ res.send(`<h1>Hello ${name}</h1>`);
+   
+    ❯❱ html-in-template-string
+          ❰❰ Blocking ❱❱
+          This template literal looks like HTML and has interpolated variables. These variables are not HTML-
+          encoded by default. If the variables contain HTML tags, these may be interpreted by the browser,   
+          resulting in cross-site scripting (XSS).                                                           
+                                                                                                             
+          114┆ res.send(`<h1>Hello ${name}</h1>`);
+   
+    ❯❱ raw-html-format
+          ❰❰ Blocking ❱❱
+          User data flows into the host portion of this manually-constructed HTML. This can introduce a Cross-
+          Site-Scripting (XSS) vulnerability if this comes from user-provided input. Consider using a         
+          sanitization library such as DOMPurify to sanitize the HTML within.                                 
+                                                                                                              
+          114┆ res.send(`<h1>Hello ${name}</h1>`);
+   
+   ❯❯❱ code-string-concat
+          ❰❰ Blocking ❱❱
+          Found data from an Express or Next web request flowing to `eval`. If this data is user-controllable
+          this can lead to execution of arbitrary system commands in the context of your application process.
+          Avoid `eval` whenever possible.                                                                    
+                                                                                                             
+          123┆ const result = eval(expression);
+   
+    ❯❱ eval-detected
+          ❰❰ Blocking ❱❱
+          Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this 
+          content can be input from outside the program, this may be a code injection vulnerability. Ensure
+          evaluated content is not definable by external sources.                                          
+                                                                                                           
+          123┆ const result = eval(expression);
+                    
+    frontend/auth.js
+    ❯❱ md5-used-as-password
+          ❰❰ Blocking ❱❱
+          It looks like MD5 is used as a password hash. MD5 is not considered a secure password hash because  
+          it can be cracked by an attacker in a short amount of time. Use a suitable password hashing function
+          such as bcrypt. You can use the `bcrypt` node.js package.                                           
+                                                                                                              
+           14┆ return crypto.createHash('md5').update(password).digest('hex');
+   
+    ❯❱ detect-redos
+          ❰❰ Blocking ❱❱
+          Detected the use of a regular expression `^[^\s@]+@([^\s@]+\.)+[^\s@]+$` which appears to be        
+          vulnerable to a Regular expression Denial-of-Service (ReDoS). For this reason, it is recommended to 
+          review the regex and ensure it is not vulnerable to catastrophic backtracking, and if possible use a
+          library which offers default safety against ReDoS vulnerabilities.                                  
+                                                                                                              
+          116┆ return re.test(email);
+
+                
+                
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+✅ Scan completed successfully.
+ • Findings: 45 (45 blocking)
+ • Rules run: 769
+ • Targets scanned: 4
+ • Parsed lines: ~100.0%
+ • Scan was limited to files tracked by git
+ • For a detailed list of skipped files and lines, run semgrep with the --verbose flag
+Ran 769 rules on 4 files: 45 findings.
+
+A new version of Semgrep is available. See https://semgrep.dev/docs/upgrading
+
+📢 Too many findings? Try Semgrep Pro for more powerful queries and less noise.
+   See https://sg.run/false-positives.

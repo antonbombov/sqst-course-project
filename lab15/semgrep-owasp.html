@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Semgrep Security Report (OWASP)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f6f8; color: #333; line-height: 1.6; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 15px; margin-bottom: 30px; }
+        h2 { font-size: 1.2em; color: #2c3e50; margin-top: 0; }
+        .stats { display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
+        .stat-card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex: 1; min-width: 200px; text-align: center; border-top: 4px solid #3498db; }
+        .stat-val { font-size: 2.5em; font-weight: bold; display: block; }
+        .val-high { color: #e74c3c; } .val-med { color: #f39c12; } .val-low { color: #3498db; }
+        .issue-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 25px; overflow: hidden; border-left: 6px solid #ccc; }
+        .issue-card.HIGH { border-left-color: #e74c3c; }
+        .issue-card.MEDIUM { border-left-color: #f39c12; }
+        .issue-card.LOW { border-left-color: #3498db; }
+        .issue-card.INFO { border-left-color: #95a5a6; }
+        .card-header { padding: 15px 20px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .rule-id { font-family: monospace; font-size: 1.1em; font-weight: bold; color: #2c3e50; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.85em; font-weight: bold; text-transform: uppercase; color: #fff; }
+        .bg-HIGH { background: #e74c3c; } .bg-MEDIUM { background: #f39c12; color: #333; } .bg-LOW { background: #3498db; } .bg-INFO { background: #95a5a6; }
+        .card-body { padding: 20px; }
+        .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 6px; }
+        .meta-item { font-size: 0.9em; }
+        .meta-label { font-weight: bold; color: #7f8c8d; display: block; margin-bottom: 3px; }
+        .meta-value { color: #2c3e50; word-break: break-word; }
+        .tag { display: inline-block; background: #e9ecef; padding: 2px 8px; border-radius: 4px; margin-right: 5px; margin-bottom: 5px; font-size: 0.85em; color: #495057; }
+        .tag-owasp { background: #e8f4fd; color: #0d6efd; border: 1px solid #b6d4fe; }
+        .tag-cwe { background: #f8d7da; color: #842029; border: 1px solid #f1aeb5; }
+        .message-box { margin: 15px 0; padding: 15px; background: #fff3cd; border: 1px solid #ffecb5; border-radius: 6px; color: #664d03; }
+        .code-block { background: #282c34; color: #abb2bf; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: "Consolas", "Monaco", monospace; font-size: 0.9em; border: 1px solid #444; white-space: pre; }
+        .refs { margin-top: 15px; font-size: 0.9em; }
+        .refs a { color: #3498db; text-decoration: none; margin-right: 15px; }
+        .refs a:hover { text-decoration: underline; }
+        .location { font-family: monospace; color: #666; background: #eee; padding: 2px 6px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🛡️ Отчет Semgrep: OWASP Top 10 & Security</h1>
+    <div class="stats">
+        <div class="stat-card" style="border-top-color: #e74c3c;">
+            <span class="stat-val val-high">0</span>
+            <span>High Severity</span>
+        </div>
+        <div class="stat-card" style="border-top-color: #f39c12;">
+            <span class="stat-val val-med">0</span>
+            <span>Medium Severity</span>
+        </div>
+        <div class="stat-card" style="border-top-color: #3498db;">
+            <span class="stat-val val-low">0</span>
+            <span>Low Severity</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-val" style="color:#7f8c8d">45</span>
+            <span>Всего найдено</span>
+        </div>
+    </div>
+
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">sql-injection-db-cursor-execute</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 81, колонка 5
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">User-controlled data from a request is passed to 'execute()'. This could lead to a SQL injection and therefore protected information could be leaked. Instead, use django's QuerySets, which are built with query parameterization and therefore not vulnerable to sql injection. For example, you could use `Entry.objects.filter(date=2006)`.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2017 - Injection</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:81</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://docs.djangoproject.com/en/3.0/topics/security/#sql-injection-protection" target="_blank">🔗 https://docs.djangoproject.com/en/3.0/topics/security/#sql-i...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">sql-injection-db-cursor-execute</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 82, колонка 5
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">User-controlled data from a request is passed to 'execute()'. This could lead to a SQL injection and therefore protected information could be leaked. Instead, use django's QuerySets, which are built with query parameterization and therefore not vulnerable to sql injection. For example, you could use `Entry.objects.filter(date=2006)`.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2017 - Injection</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:82</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://docs.djangoproject.com/en/3.0/topics/security/#sql-injection-protection" target="_blank">🔗 https://docs.djangoproject.com/en/3.0/topics/security/#sql-i...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">tainted-sql-string</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 86, колонка 13
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using an object-relational mapper (ORM) such as SQLAlchemy which will protect your queries.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2017 - Injection</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-704: Incorrect Type Conversion or Cast</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:86</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://docs.sqlalchemy.org/en/14/core/tutorial.html#using-textual-sql" target="_blank">🔗 https://docs.sqlalchemy.org/en/14/core/tutorial.html#using-t...</a><a href="https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_quick_guide.htm" target="_blank">🔗 https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_quick_g...</a><a href="https://docs.sqlalchemy.org/en/14/core/tutorial.html#using-more-specific-text-with-table-expression-literal-column-and-expression-column" target="_blank">🔗 https://docs.sqlalchemy.org/en/14/core/tutorial.html#using-m...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">tainted-sql-string</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 86, колонка 13
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using the Django object-relational mappers (ORM) instead of raw SQL queries.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A08:2021 - Software and Data Integrity Failures</span><span class="tag tag-owasp">A08:2025 - Software or Data Integrity Failures</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-915: Improperly Controlled Modification of Dynamically-Determined Object Attributes</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:86</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://docs.djangoproject.com/en/3.0/topics/security/#sql-injection-protection" target="_blank">🔗 https://docs.djangoproject.com/en/3.0/topics/security/#sql-i...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">formatted-sql-query</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 87, колонка 12
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected possible formatted SQL query. Use parameterized queries instead.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2017 - Injection</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:87</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://stackoverflow.com/questions/775296/mysql-parameterized-queries" target="_blank">🔗 https://stackoverflow.com/questions/775296/mysql-parameteriz...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">sqlalchemy-execute-raw-query</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 87, колонка 12
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2017 - Injection</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:87</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://docs.sqlalchemy.org/en/14/core/tutorial.html#using-textual-sql" target="_blank">🔗 https://docs.sqlalchemy.org/en/14/core/tutorial.html#using-t...</a><a href="https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_quick_guide.htm" target="_blank">🔗 https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_quick_g...</a><a href="https://docs.sqlalchemy.org/en/14/core/tutorial.html#using-more-specific-text-with-table-expression-literal-column-and-expression-column" target="_blank">🔗 https://docs.sqlalchemy.org/en/14/core/tutorial.html#using-m...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">dangerous-subprocess-use-audit</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 109, колонка 14
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected subprocess function 'check_output' without a static string. If this data can be controlled by a malicious actor, it may be an instance of command injection. Audit the use of this call to ensure it is not controllable by an external resource. You may consider using 'shlex.escape()'.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2017 - Injection</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:109</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess" target="_blank">🔗 https://stackoverflow.com/questions/3172470/actual-meaning-o...</a><a href="https://docs.python.org/3/library/subprocess.html" target="_blank">🔗 https://docs.python.org/3/library/subprocess.html...</a><a href="https://docs.python.org/3/library/shlex.html" target="_blank">🔗 https://docs.python.org/3/library/shlex.html...</a><a href="https://semgrep.dev/docs/cheat-sheets/python-command-injection/" target="_blank">🔗 https://semgrep.dev/docs/cheat-sheets/python-command-injecti...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">subprocess-injection</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 109, колонка 14
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected user input entering a `subprocess` call unsafely. This could result in a command injection vulnerability. An attacker could use this vulnerability to execute arbitrary commands on the host, which allows them to download malware, scan sensitive data, or run any command they wish on the server. Do not let users choose the command to run. In general, prefer to use Python API versions of system commands. If you must use subprocess, use a dictionary to allowlist a set of commands.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2017 - Injection</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">HIGH</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:109</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://semgrep.dev/docs/cheat-sheets/python-command-injection/" target="_blank">🔗 https://semgrep.dev/docs/cheat-sheets/python-command-injecti...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">dangerous-subprocess-use</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 109, колонка 38
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected subprocess function 'check_output' with user controlled data. A malicious actor could leverage this to perform command injection. You may consider using 'shlex.escape()'.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2017 - Injection</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:109</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess" target="_blank">🔗 https://stackoverflow.com/questions/3172470/actual-meaning-o...</a><a href="https://docs.python.org/3/library/subprocess.html" target="_blank">🔗 https://docs.python.org/3/library/subprocess.html...</a><a href="https://docs.python.org/3/library/shlex.html" target="_blank">🔗 https://docs.python.org/3/library/shlex.html...</a><a href="https://semgrep.dev/docs/cheat-sheets/python-command-injection/" target="_blank">🔗 https://semgrep.dev/docs/cheat-sheets/python-command-injecti...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">subprocess-shell-true</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 109, колонка 65
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Found 'subprocess' function 'check_output' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2017 - Injection</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:109</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://stackoverflow.com/questions/3172470/actual-meaning-of-shell-true-in-subprocess" target="_blank">🔗 https://stackoverflow.com/questions/3172470/actual-meaning-o...</a><a href="https://docs.python.org/3/library/subprocess.html" target="_blank">🔗 https://docs.python.org/3/library/subprocess.html...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">unspecified-open-encoding</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 128, колонка 10
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Missing 'encoding' parameter. 'open()' uses device locale encodings by default, corrupting files with special characters. Specify the encoding to ensure cross-platform support when opening files in text mode (e.g. encoding="utf-8").</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span style='color:#999'>No OWASP mapping</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span style='color:#999'>No CWE mapping</span></div>
+                    </div>
+                    
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">best-practice</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:128</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://www.python.org/dev/peps/pep-0597/" target="_blank">🔗 https://www.python.org/dev/peps/pep-0597/...</a><a href="https://docs.python.org/3/library/functions.html#open" target="_blank">🔗 https://docs.python.org/3/library/functions.html#open...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">insecure-hash-algorithm-md5</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 142, колонка 12
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected MD5 hash algorithm which is considered insecure. MD5 is not collision resistant and is therefore not suitable as a cryptographic signature. Use SHA256 or SHA3 instead.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A03:2017 - Sensitive Data Exposure</span><span class="tag tag-owasp">A02:2021 - Cryptographic Failures</span><span class="tag tag-owasp">A04:2025 - Cryptographic Failures</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-327: Use of a Broken or Risky Cryptographic Algorithm</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:142</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://www.schneier.com/blog/archives/2012/10/when_will_we_se.html" target="_blank">🔗 https://www.schneier.com/blog/archives/2012/10/when_will_we_...</a><a href="https://www.trendmicro.com/vinfo/us/security/news/vulnerabilities-and-exploits/sha-1-collision-signals-the-end-of-the-algorithm-s-viability" target="_blank">🔗 https://www.trendmicro.com/vinfo/us/security/news/vulnerabil...</a><a href="http://2012.sharcs.org/slides/stevens.pdf" target="_blank">🔗 http://2012.sharcs.org/slides/stevens.pdf...</a><a href="https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_256.html" target="_blank">🔗 https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">md5-used-as-password</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 142, колонка 12
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">It looks like MD5 is used as a password hash. MD5 is not considered a secure password hash because it can be cracked by an attacker in a short amount of time. Use a suitable password hashing function such as scrypt. You can use `hashlib.scrypt`.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A03:2017 - Sensitive Data Exposure</span><span class="tag tag-owasp">A02:2021 - Cryptographic Failures</span><span class="tag tag-owasp">A04:2025 - Cryptographic Failures</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-327: Use of a Broken or Risky Cryptographic Algorithm</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:142</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://tools.ietf.org/html/rfc6151" target="_blank">🔗 https://tools.ietf.org/html/rfc6151...</a><a href="https://crypto.stackexchange.com/questions/44151/how-does-the-flame-malware-take-advantage-of-md5-collision" target="_blank">🔗 https://crypto.stackexchange.com/questions/44151/how-does-th...</a><a href="https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_256.html" target="_blank">🔗 https://pycryptodome.readthedocs.io/en/latest/src/hash/sha3_...</a><a href="https://security.stackexchange.com/questions/211/how-to-securely-hash-passwords" target="_blank">🔗 https://security.stackexchange.com/questions/211/how-to-secu...</a><a href="https://github.com/returntocorp/semgrep-rules/issues/1609" target="_blank">🔗 https://github.com/returntocorp/semgrep-rules/issues/1609...</a><a href="https://docs.python.org/3/library/hashlib.html#hashlib.scrypt" target="_blank">🔗 https://docs.python.org/3/library/hashlib.html#hashlib.scryp...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">directly-returned-format-string</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 167, колонка 5
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected Flask route directly returning a formatted string. This is subject to cross-site scripting if user input can reach the string. Consider using the template engine instead and rendering pages with 'render_template()'.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A07:2017 - Cross-Site Scripting (XSS)</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:167</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/Top10/A03_2021-Injection" target="_blank">🔗 https://owasp.org/Top10/A03_2021-Injection...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">raw-html-format</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 167, колонка 12
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected user input flowing into a manually constructed HTML string. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross-site scripting vulnerability, which could let attackers steal sensitive user data. To be sure this is safe, check that the HTML is rendered safely. Otherwise, use templates (`django.shortcuts.render`) which will safely render HTML instead.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A07:2017 - Cross-Site Scripting (XSS)</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:167</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://docs.djangoproject.com/en/3.2/topics/http/shortcuts/#render" target="_blank">🔗 https://docs.djangoproject.com/en/3.2/topics/http/shortcuts/...</a><a href="https://docs.djangoproject.com/en/3.2/topics/security/#cross-site-scripting-xss-protection" target="_blank">🔗 https://docs.djangoproject.com/en/3.2/topics/security/#cross...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">raw-html-format</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 167, колонка 12
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected user input flowing into a manually constructed HTML string. You may be accidentally bypassing secure methods of rendering HTML by manually constructing HTML and this could create a cross-site scripting vulnerability, which could let attackers steal sensitive user data. To be sure this is safe, check that the HTML is rendered safely. Otherwise, use templates (`flask.render_template`) which will safely render HTML instead.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A07:2017 - Cross-Site Scripting (XSS)</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:167</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://flask.palletsprojects.com/en/2.0.x/security/#cross-site-scripting-xss" target="_blank">🔗 https://flask.palletsprojects.com/en/2.0.x/security/#cross-s...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">avoid_app_run_with_bad_host</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/app.py</span> : строка 184, колонка 5
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Running flask app with host 0.0.0.0 could expose the server publicly.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2021 - Broken Access Control</span><span class="tag tag-owasp">A01:2025 - Broken Access Control</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-668: Exposure of Resource to Wrong Sphere</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">HIGH</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/app.py:184</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control" target="_blank">🔗 https://owasp.org/Top10/A01_2021-Broken_Access_Control...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">use-defused-xml</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/utils.py</span> : строка 25, колонка 1
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">The Python documentation recommends using `defusedxml` instead of `xml` because the native Python `xml` library is vulnerable to XML External Entity (XXE) attacks. These attacks can leak confidential data and "XML bombs" can cause denial of service.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A04:2017 - XML External Entities (XXE)</span><span class="tag tag-owasp">A05:2021 - Security Misconfiguration</span><span class="tag tag-owasp">A02:2025 - Security Misconfiguration</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-611: Improper Restriction of XML External Entity Reference</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/utils.py:25</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://docs.python.org/3/library/xml.html" target="_blank">🔗 https://docs.python.org/3/library/xml.html...</a><a href="https://github.com/tiran/defusedxml" target="_blank">🔗 https://github.com/tiran/defusedxml...</a><a href="https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing" target="_blank">🔗 https://owasp.org/www-community/vulnerabilities/XML_External...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">avoid-pickle</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/utils.py</span> : строка 36, колонка 12
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A08:2017 - Insecure Deserialization</span><span class="tag tag-owasp">A08:2021 - Software and Data Integrity Failures</span><span class="tag tag-owasp">A08:2025 - Software or Data Integrity Failures</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-502: Deserialization of Untrusted Data</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/utils.py:36</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://docs.python.org/3/library/pickle.html" target="_blank">🔗 https://docs.python.org/3/library/pickle.html...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">avoid-pickle</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/utils.py</span> : строка 42, колонка 12
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Avoid using `pickle`, which is known to lead to code execution vulnerabilities. When unpickling, the serialized data could be manipulated to run arbitrary code. Instead, consider serializing the relevant data as JSON or a similar text-based serialization format.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A08:2017 - Insecure Deserialization</span><span class="tag tag-owasp">A08:2021 - Software and Data Integrity Failures</span><span class="tag tag-owasp">A08:2025 - Software or Data Integrity Failures</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-502: Deserialization of Untrusted Data</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/utils.py:42</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://docs.python.org/3/library/pickle.html" target="_blank">🔗 https://docs.python.org/3/library/pickle.html...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">dynamic-urllib-use-detected</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/utils.py</span> : строка 88, колонка 10
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected a dynamic value being used with urllib. urllib supports 'file://' schemes, so a dynamic value controlled by a malicious actor may allow them to read arbitrary files. Audit uses of urllib calls to ensure user data cannot control the URLs, or consider using the 'requests' library instead.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A</span><span class="tag tag-owasp">0</span><span class="tag tag-owasp">1</span><span class="tag tag-owasp">:</span><span class="tag tag-owasp">2</span><span class="tag tag-owasp">0</span><span class="tag tag-owasp">1</span><span class="tag tag-owasp">7</span><span class="tag tag-owasp"> </span><span class="tag tag-owasp">-</span><span class="tag tag-owasp"> </span><span class="tag tag-owasp">I</span><span class="tag tag-owasp">n</span><span class="tag tag-owasp">j</span><span class="tag tag-owasp">e</span><span class="tag tag-owasp">c</span><span class="tag tag-owasp">t</span><span class="tag tag-owasp">i</span><span class="tag tag-owasp">o</span><span class="tag tag-owasp">n</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-939: Improper Authorization in Handler for Custom URL Scheme</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/utils.py:88</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://cwe.mitre.org/data/definitions/939.html" target="_blank">🔗 https://cwe.mitre.org/data/definitions/939.html...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">unspecified-open-encoding</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/utils.py</span> : строка 125, колонка 10
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Missing 'encoding' parameter. 'open()' uses device locale encodings by default, corrupting files with special characters. Specify the encoding to ensure cross-platform support when opening files in text mode (e.g. encoding="utf-8").</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span style='color:#999'>No OWASP mapping</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span style='color:#999'>No CWE mapping</span></div>
+                    </div>
+                    
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">best-practice</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/utils.py:125</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://www.python.org/dev/peps/pep-0597/" target="_blank">🔗 https://www.python.org/dev/peps/pep-0597/...</a><a href="https://docs.python.org/3/library/functions.html#open" target="_blank">🔗 https://docs.python.org/3/library/functions.html#open...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">unspecified-open-encoding</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">backend/utils.py</span> : строка 146, колонка 10
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Missing 'encoding' parameter. 'open()' uses device locale encodings by default, corrupting files with special characters. Specify the encoding to ensure cross-platform support when opening files in text mode (e.g. encoding="utf-8").</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span style='color:#999'>No OWASP mapping</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span style='color:#999'>No CWE mapping</span></div>
+                    </div>
+                    
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">best-practice</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for backend/utils.py:146</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://www.python.org/dev/peps/pep-0597/" target="_blank">🔗 https://www.python.org/dev/peps/pep-0597/...</a><a href="https://docs.python.org/3/library/functions.html#open" target="_blank">🔗 https://docs.python.org/3/library/functions.html#open...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">express-check-csurf-middleware-usage</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 7, колонка 7
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">A CSRF middleware was not detected in your express application. Ensure you are either using one such as `csurf` or `csrf` (see rule references) and/or you are properly doing CSRF validation in your routes with a token or cookies.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2021 - Broken Access Control</span><span class="tag tag-owasp">A01:2025 - Broken Access Control</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-352: Cross-Site Request Forgery (CSRF)</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:7</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://www.npmjs.com/package/csurf" target="_blank">🔗 https://www.npmjs.com/package/csurf...</a><a href="https://www.npmjs.com/package/csrf" target="_blank">🔗 https://www.npmjs.com/package/csrf...</a><a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html" target="_blank">🔗 https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Re...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">generic-api-key</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 13, колонка 21
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">A gitleaks generic-api-key was detected which attempts to identify hard-coded credentials.  It is not recommended to store credentials in source-code, as this risks secrets being leaked  and used by either an internal or external malicious adversary. It is recommended to use  environment variables to securely provide credentials or retrieve credentials from a  secure vault or HSM (Hardware Security Module). This rule can introduce a lot of false positives,  it is not recommended to be used in PR comments.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A07:2021 - Identification and Authentication Failures</span><span class="tag tag-owasp">A07:2025 - Authentication Failures</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-798: Use of Hard-coded Credentials</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:13</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html" target="_blank">🔗 https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Manag...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">stripe-access-token</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 14, колонка 18
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">A gitleaks stripe-access-token was detected which attempts to identify hard-coded credentials. It is not recommended to store credentials in source-code, as this risks secrets being leaked and used by either an internal or external malicious adversary. It is recommended to use environment variables to securely provide credentials or retrieve credentials from a secure vault or HSM (Hardware Security Module).</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A07:2021 - Identification and Authentication Failures</span><span class="tag tag-owasp">A07:2025 - Authentication Failures</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-798: Use of Hard-coded Credentials</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:14</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html" target="_blank">🔗 https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Manag...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">express-cookie-session-default-name</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 27, колонка 9
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Don’t use the default session cookie name Using the default session cookie name can open your app to attacks. The security issue posed is similar to X-Powered-By: a potential attacker can use it to fingerprint the server and target attacks accordingly.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A02:2017 - Broken Authentication</span><span class="tag tag-owasp">A04:2021 - Insecure Design</span><span class="tag tag-owasp">A06:2025 - Insecure Design</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-522: Insufficiently Protected Credentials</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:27</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/Top10/A04_2021-Insecure_Design" target="_blank">🔗 https://owasp.org/Top10/A04_2021-Insecure_Design...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">express-cookie-session-no-domain</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 27, колонка 9
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Default session middleware settings: `domain` not set. It indicates the domain of the cookie; use it to compare against the domain of the server in which the URL is being requested. If they match, then check the path attribute next.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A02:2017 - Broken Authentication</span><span class="tag tag-owasp">A04:2021 - Insecure Design</span><span class="tag tag-owasp">A06:2025 - Insecure Design</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-522: Insufficiently Protected Credentials</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:27</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/Top10/A04_2021-Insecure_Design" target="_blank">🔗 https://owasp.org/Top10/A04_2021-Insecure_Design...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">express-cookie-session-no-expires</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 27, колонка 9
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Default session middleware settings: `expires` not set. Use it to set expiration date for persistent cookies.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A02:2017 - Broken Authentication</span><span class="tag tag-owasp">A04:2021 - Insecure Design</span><span class="tag tag-owasp">A06:2025 - Insecure Design</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-522: Insufficiently Protected Credentials</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:27</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/Top10/A04_2021-Insecure_Design" target="_blank">🔗 https://owasp.org/Top10/A04_2021-Insecure_Design...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">express-cookie-session-no-httponly</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 27, колонка 9
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Default session middleware settings: `httpOnly` not set. It ensures the cookie is sent only over HTTP(S), not client JavaScript, helping to protect against cross-site scripting attacks.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A02:2017 - Broken Authentication</span><span class="tag tag-owasp">A04:2021 - Insecure Design</span><span class="tag tag-owasp">A06:2025 - Insecure Design</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-522: Insufficiently Protected Credentials</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:27</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/Top10/A04_2021-Insecure_Design" target="_blank">🔗 https://owasp.org/Top10/A04_2021-Insecure_Design...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">express-cookie-session-no-path</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 27, колонка 9
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Default session middleware settings: `path` not set. It indicates the path of the cookie; use it to compare against the request path. If this and domain match, then send the cookie in the request.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A02:2017 - Broken Authentication</span><span class="tag tag-owasp">A04:2021 - Insecure Design</span><span class="tag tag-owasp">A06:2025 - Insecure Design</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-522: Insufficiently Protected Credentials</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:27</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/Top10/A04_2021-Insecure_Design" target="_blank">🔗 https://owasp.org/Top10/A04_2021-Insecure_Design...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">express-cookie-session-no-secure</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 27, колонка 9
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Default session middleware settings: `secure` not set. It ensures the browser only sends the cookie over HTTPS.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A02:2017 - Broken Authentication</span><span class="tag tag-owasp">A04:2021 - Insecure Design</span><span class="tag tag-owasp">A06:2025 - Insecure Design</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-522: Insufficiently Protected Credentials</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:27</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/Top10/A04_2021-Insecure_Design" target="_blank">🔗 https://owasp.org/Top10/A04_2021-Insecure_Design...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">express-session-hardcoded-secret</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 28, колонка 5
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">A hard-coded credential was detected. It is not recommended to store credentials in source-code, as this risks secrets being leaked and used by either an internal or external malicious adversary. It is recommended to use environment variables to securely provide credentials or retrieve credentials from a secure vault or HSM (Hardware Security Module).</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A07:2021 - Identification and Authentication Failures</span><span class="tag tag-owasp">A07:2025 - Authentication Failures</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-798: Use of Hard-coded Credentials</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">HIGH</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:28</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html" target="_blank">🔗 https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Manag...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">tainted-sql-string</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 56, колонка 60
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using an object-relational mapper (ORM) such as Sequelize which will protect your queries.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2017 - Injection</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:56</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/www-community/attacks/SQL_Injection" target="_blank">🔗 https://owasp.org/www-community/attacks/SQL_Injection...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">detect-child-process</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 80, колонка 10
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected calls to child_process from a function argument `req`. This could lead to a command injection if the input is user controllable. Try to avoid calls to child_process, and if it is needed ensure user input is correctly sanitized or sandboxed. </div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A01:2017 - Injection</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:80</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://cheatsheetseries.owasp.org/cheatsheets/Nodejs_Security_Cheat_Sheet.html#do-not-use-dangerous-functions" target="_blank">🔗 https://cheatsheetseries.owasp.org/cheatsheets/Nodejs_Securi...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">express-path-join-resolve-traversal</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 98, колонка 50
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Possible writing outside of the destination, make sure that the target path is nested in the intended destination</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A05:2017 - Broken Access Control</span><span class="tag tag-owasp">A01:2021 - Broken Access Control</span><span class="tag tag-owasp">A01:2025 - Broken Access Control</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:98</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/www-community/attacks/Path_Traversal" target="_blank">🔗 https://owasp.org/www-community/attacks/Path_Traversal...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">path-join-resolve-traversal</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 98, колонка 50
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected possible user input going into a `path.join` or `path.resolve` function. This could possibly lead to a path traversal vulnerability,  where the attacker can access arbitrary files stored in the file system. Instead, be sure to sanitize or validate user input first.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A05:2017 - Broken Access Control</span><span class="tag tag-owasp">A01:2021 - Broken Access Control</span><span class="tag tag-owasp">A01:2025 - Broken Access Control</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:98</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/www-community/attacks/Path_Traversal" target="_blank">🔗 https://owasp.org/www-community/attacks/Path_Traversal...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">detect-non-literal-fs-filename</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 99, колонка 17
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected that function argument `req` has entered the fs module. An attacker could potentially control the location of this file, to include going backwards in the directory with '../'. To address this, ensure that user-controlled variables in file paths are validated.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A05:2017 - Broken Access Control</span><span class="tag tag-owasp">A01:2021 - Broken Access Control</span><span class="tag tag-owasp">A01:2025 - Broken Access Control</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:99</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/www-community/attacks/Path_Traversal" target="_blank">🔗 https://owasp.org/www-community/attacks/Path_Traversal...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">direct-response-write</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 114, колонка 14
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected directly writing to a Response object from user-defined input. This bypasses any HTML escaping and may expose your application to a Cross-Site-scripting (XSS) vulnerability. Instead, use 'resp.render()' to render safely escaped HTML.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A07:2017 - Cross-Site Scripting (XSS)</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:114</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html" target="_blank">🔗 https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Sc...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">html-in-template-string</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 114, колонка 14
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">This template literal looks like HTML and has interpolated variables. These variables are not HTML-encoded by default. If the variables contain HTML tags, these may be interpreted by the browser, resulting in cross-site scripting (XSS).</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-116: Improper Encoding or Escaping of Output</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:114</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/Top10/A03_2021-Injection" target="_blank">🔗 https://owasp.org/Top10/A03_2021-Injection...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">raw-html-format</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 114, колонка 14
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">User data flows into the host portion of this manually-constructed HTML. This can introduce a Cross-Site-Scripting (XSS) vulnerability if this comes from user-provided input. Consider using a sanitization library such as DOMPurify to sanitize the HTML within.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A07:2017 - Cross-Site Scripting (XSS)</span><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">MEDIUM</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:114</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html" target="_blank">🔗 https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Sc...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">code-string-concat</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 123, колонка 20
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Found data from an Express or Next web request flowing to `eval`. If this data is user-controllable this can lead to execution of arbitrary system commands in the context of your application process. Avoid `eval` whenever possible.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">HIGH</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:123</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval" target="_blank">🔗 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe...</a><a href="https://nodejs.org/api/child_process.html#child_processexeccommand-options-callback" target="_blank">🔗 https://nodejs.org/api/child_process.html#child_processexecc...</a><a href="https://www.stackhawk.com/blog/nodejs-command-injection-examples-and-prevention/" target="_blank">🔗 https://www.stackhawk.com/blog/nodejs-command-injection-exam...</a><a href="https://ckarande.gitbooks.io/owasp-nodegoat-tutorial/content/tutorial/a1_-_server_side_js_injection.html" target="_blank">🔗 https://ckarande.gitbooks.io/owasp-nodegoat-tutorial/content...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">eval-detected</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/app.js</span> : строка 123, колонка 20
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected the use of eval(). eval() can be dangerous if used to evaluate dynamic content. If this content can be input from outside the program, this may be a code injection vulnerability. Ensure evaluated content is not definable by external sources.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A03:2021 - Injection</span><span class="tag tag-owasp">A05:2025 - Injection</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">LOW</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/app.js:123</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/Top10/A03_2021-Injection" target="_blank">🔗 https://owasp.org/Top10/A03_2021-Injection...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">md5-used-as-password</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/auth.js</span> : строка 14, колонка 5
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">It looks like MD5 is used as a password hash. MD5 is not considered a secure password hash because it can be cracked by an attacker in a short amount of time. Use a suitable password hashing function such as bcrypt. You can use the `bcrypt` node.js package.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A03:2017 - Sensitive Data Exposure</span><span class="tag tag-owasp">A02:2021 - Cryptographic Failures</span><span class="tag tag-owasp">A04:2025 - Cryptographic Failures</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-327: Use of a Broken or Risky Cryptographic Algorithm</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">HIGH</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/auth.js:14</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://tools.ietf.org/id/draft-lvelvindron-tls-md5-sha1-deprecate-01.html" target="_blank">🔗 https://tools.ietf.org/id/draft-lvelvindron-tls-md5-sha1-dep...</a><a href="https://security.stackexchange.com/questions/211/how-to-securely-hash-passwords" target="_blank">🔗 https://security.stackexchange.com/questions/211/how-to-secu...</a><a href="https://github.com/returntocorp/semgrep-rules/issues/1609" target="_blank">🔗 https://github.com/returntocorp/semgrep-rules/issues/1609...</a><a href="https://www.npmjs.com/package/bcrypt" target="_blank">🔗 https://www.npmjs.com/package/bcrypt...</a></div>
+            </div>
+        </div>
+        
+        <div class="issue-card INFO">
+            <div class="card-header">
+                <div>
+                    <div class="rule-id">detect-redos</div>
+                    <div style="font-size:0.9em; color:#666; margin-top:4px;">
+                        📍 <span class="location">frontend/auth.js</span> : строка 116, колонка 16
+                    </div>
+                </div>
+                <span class="badge bg-INFO">INFO</span>
+            </div>
+            <div class="card-body">
+                <div class="message-box">Detected the use of a regular expression `^[^\s@]+@([^\s@]+\.)+[^\s@]+$` which appears to be vulnerable to a Regular expression Denial-of-Service (ReDoS). For this reason, it is recommended to review the regex and ensure it is not vulnerable to catastrophic backtracking, and if possible use a library which offers default safety against ReDoS vulnerabilities.</div>
+                <div class="meta-grid">
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">OWASP Categories:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-owasp">A05:2021 - Security Misconfiguration</span><span class="tag tag-owasp">A06:2017 - Security Misconfiguration</span><span class="tag tag-owasp">A02:2025 - Security Misconfiguration</span></div>
+                    </div>
+                    <div class="meta-item" style="grid-column: 1 / -1;">
+                        <span class="meta-label">CWE:</span>
+                        <div style="margin-top:5px;"><span class="tag tag-cwe">CWE-1333: Inefficient Regular Expression Complexity</span></div>
+                    </div>
+                    
+            <div class="meta-item"><span class="meta-label">Impact:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Likelihood:</span> <span class="meta-value">MEDIUM</span></div>
+            <div class="meta-item"><span class="meta-label">Confidence:</span> <span class="meta-value">LOW</span></div>
+            
+                    <div class="meta-item"><span class="meta-label">Category:</span> <span class="meta-value">security</span></div>
+                </div>
+                <div style="margin-top:20px;"><strong>💻 Уязвимый код:</strong></div>
+                <div class="code-block"># Code unavailable for frontend/auth.js:116</div>
+                <div class='refs'><strong>📚 Ресурсы:</strong><br><a href="https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS" target="_blank">🔗 https://owasp.org/www-community/attacks/Regular_expression_D...</a><a href="https://www.regular-expressions.info/redos.html" target="_blank">🔗 https://www.regular-expressions.info/redos.html...</a></div>
+            </div>
+        </div>
+        
+</div>
+<footer style="text-align:center;margin-top:50px;color:#999;font-size:0.8em;">
+    Generated by Semgrep Docker Wrapper • Local Offline Mode
+</footer>
+</body>
+</html>
